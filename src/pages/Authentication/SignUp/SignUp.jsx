@@ -1,14 +1,28 @@
 import { useForm } from "react-hook-form";
+import useAuth from "../../../hooks/useAuth";
+import { Link } from "react-router-dom";
+import SocialLogin from "../SocialLogin/SocialLogin";
 
 
 const SignUp = () => {
+    const {createUser}=useAuth();
      const {
         register,
         handleSubmit,
         formState: { errors },
       } = useForm();
     
-      const onSubmit = (data) => console.log(data);
+      const onSubmit = (data) => {
+        console.log(data)
+        createUser(data.email,data.password)
+        .then(result=>{
+            const user=result.user;
+            console.log(user)
+        })
+        .catch(error=>{
+            console.error(error)
+        })
+    };
     
     return (
          <div className="w-full max-w-xs mx-auto">
@@ -69,7 +83,9 @@ const SignUp = () => {
             SignUp
           </button>
         </fieldset>
+        <p>Aleady Have an Account <Link to='/login' className="mx-1 underline text-purple-600">Login</Link></p>
       </form>
+      <SocialLogin></SocialLogin>
     </div>
     );
 };
