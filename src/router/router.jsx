@@ -7,6 +7,8 @@ import SignUp from "../pages/Authentication/SignUp/SignUp";
 import Coverage from "../pages/Coverage/Coverage";
 import PrivetRoutes from "./PrivetRoutes";
 import SendParcel from "../pages/SendParcel/SendParcel";
+import DashBoardLayout from "../layouts/DashBoardLayout";
+import MyParcels from "../pages/Dashboard/MyParcels/MyParcels";
 
 export const router = createBrowserRouter([
   {
@@ -43,5 +45,19 @@ export const router = createBrowserRouter([
       }
     ]
 
+  },
+
+  // dashboard layout 
+  {
+    path:'dashboard',
+    element:<PrivetRoutes>
+      <DashBoardLayout></DashBoardLayout>
+      </PrivetRoutes>,
+      children:[
+        {
+          path:'myParcels',
+          element:<MyParcels></MyParcels>
+        }
+      ]
   }
 ]);

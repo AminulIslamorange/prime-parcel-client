@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import { useLoaderData } from "react-router-dom";
 import Swal from 'sweetalert2';
+import useAuth from "../../hooks/useAuth";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 
 
@@ -19,8 +21,8 @@ const SendParcel = () => {
         watch,
         formState: { errors },
     } = useForm();
-    // const { user } = useAuth();
-    // const axiosSecure = useAxiosSecure();
+    const { user } = useAuth();
+    const axiosSecure=useAxiosSecure();
 
     const serviceCenters = useLoaderData();
     // Extract unique regions
