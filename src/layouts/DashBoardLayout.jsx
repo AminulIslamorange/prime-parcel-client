@@ -1,4 +1,5 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
+import ProFastLogo from "../pages/shared/ProFastLogo/ProFastLogo";
 
 
 const DashBoardLayout = () => {
@@ -51,10 +52,11 @@ const DashBoardLayout = () => {
         <label htmlFor="my-drawer-2" className="drawer-overlay"></label>
 
         <ul className="menu bg-base-200 w-80 min-h-full p-4 text-base-content overflow-y-auto">
-          <h2 className="text-xl font-bold mb-4 px-2">Menu</h2>
+          <ProFastLogo></ProFastLogo>
+          <h2 className="text-xl font-bold mb-4 px-2 mt-4">Menu</h2>
 
           <li>
-            <a className="rounded-lg">Dashboard Home</a>
+            <Link to='/dashboard/myParcels' className="rounded-lg"> My Parcels</Link>
           </li>
 
           <li>

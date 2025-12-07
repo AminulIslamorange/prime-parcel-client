@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 const MyParcels = () => {
     const {user}=useAuth();
     const axiosSecure=useAxiosSecure();
-    const {data:parcels=[]}=useQuery({
+    const {data:parcels=[], refetch}=useQuery({
         queryKey:['my-parcels',user.email],
         queryFn:async()=>{
             const res=await axiosSecure.get(`/parcels?email=${user.email}`);
