@@ -1,15 +1,31 @@
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import SocialLogin from "../SocialLogin/SocialLogin";
+import useAuth from "../../../hooks/useAuth";
 
 const Login = () => {
+  const {signInUser}=useAuth();
+  const location=useLocation();
+  const navigate=useNavigate();
+  const from = location.state?.from?.pathname || "/";
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data) => {
+    signInUser(data.email,data.password)
+    .then(result=>{
+      const user=result.user
+      console.log(user)
+      navigate(from);
+    })
+    .catch(error=>console.error(error))
+
+    console.log(data);
+    
+  };
 
   return (
     <div className="w-full max-w-xs mx-auto">
