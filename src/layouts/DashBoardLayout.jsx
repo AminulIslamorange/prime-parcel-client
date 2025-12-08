@@ -1,7 +1,6 @@
 import { Link, Outlet } from "react-router-dom";
 import ProFastLogo from "../pages/shared/ProFastLogo/ProFastLogo";
 
-
 const DashBoardLayout = () => {
   return (
     <div className="drawer lg:drawer-open min-h-screen">
@@ -9,8 +8,8 @@ const DashBoardLayout = () => {
 
       {/* MAIN CONTENT AREA */}
       <div className="drawer-content flex flex-col bg-base-100">
-        
-        {/* Top Navbar (Visible only on mobile/tablet) */}
+
+        {/* Mobile Navbar */}
         <div className="navbar bg-base-300 sticky top-0 z-50 lg:hidden">
           <div className="flex-none">
             <label
@@ -36,14 +35,17 @@ const DashBoardLayout = () => {
           <div className="flex-1 px-2 font-semibold text-lg">Dashboard</div>
         </div>
 
-        {/* PAGE CONTENT */}
-        <Outlet></Outlet>
-        {/* hare will be change ui */}
+        {/* TOP FIXED SECTION */}
         <div className="p-4 lg:p-6">
           <h1 className="text-2xl font-bold mb-4">Welcome to Dashboard</h1>
-          <div className="bg-base-200 p-4 rounded-xl shadow-sm">
+          <div className="bg-base-200 p-4 rounded-xl shadow-sm mb-6">
             Your content goes here…
           </div>
+        </div>
+
+        {/* PAGE ROUTE CONTENT */}
+        <div className="p-4 lg:p-6">
+          <Outlet></Outlet>
         </div>
       </div>
 
@@ -56,20 +58,12 @@ const DashBoardLayout = () => {
           <h2 className="text-xl font-bold mb-4 px-2 mt-4">Menu</h2>
 
           <li>
-            <Link to='/dashboard/myParcels' className="rounded-lg"> My Parcels</Link>
+            <Link to="/dashboard/myParcels" className="rounded-lg">My Parcels</Link>
           </li>
 
-          <li>
-            <a className="rounded-lg">Orders</a>
-          </li>
-
-          <li>
-            <a className="rounded-lg">Users</a>
-          </li>
-
-          <li>
-            <a className="rounded-lg">Settings</a>
-          </li>
+          <li><a className="rounded-lg">Orders</a></li>
+          <li><a className="rounded-lg">Users</a></li>
+          <li><a className="rounded-lg">Settings</a></li>
 
           <div className="divider"></div>
 
