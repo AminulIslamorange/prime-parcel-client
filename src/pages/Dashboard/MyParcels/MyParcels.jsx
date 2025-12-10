@@ -6,17 +6,26 @@ import { useNavigate } from "react-router-dom";
 
 
 const MyParcels = () => {
-    const {user}=useAuth();
-    const axiosSecure=useAxiosSecure();
-    const navigate=useNavigate();
-    const {data:parcels=[], refetch}=useQuery({
-        queryKey:['my-parcels',user.email],
-        queryFn:async()=>{
-            const res=await axiosSecure.get(`/parcels?email=${user.email}`);
-            return res.data;
+    const { user } = useAuth();
+    const axiosSecure = useAxiosSecure();
+    const navigate = useNavigate();
+    // const {data:parcels={}, refetch}=useQuery({
+    //     queryKey:['my-parcels',user.email],
+    //     queryFn:async()=>{
+    //         const res=await axiosSecure.get(`/parcels?email=${user.email}`);
+    //         return res.data;
 
+    //     }
+    // })
+
+    const { data: parcels = [], refetch } = useQuery({
+        queryKey: ['my-parcels', user?.email],
+        queryFn: async () => {
+            const res = await axiosSecure.get(`/parcels?email=${user.email}`);
+            return res.data.data || []; // শুধু array return করবো
         }
-    })
+    });
+    console.log(parcels);
     const handleView = (id) => {
         console.log("View parcel", id);
         // You could open a modal or navigate to a detail page
@@ -27,7 +36,7 @@ const MyParcels = () => {
         navigate(`/dashboard/payment/${id}`)
     };
 
- const handleDelete = async (id) => {
+    const handleDelete = async (id) => {
         const confirm = await Swal.fire({
             title: "Are you sure?",
             text: "This parcel will be permanently deleted!",
@@ -40,7 +49,7 @@ const MyParcels = () => {
         });
         if (confirm.isConfirmed) {
             try {
-                
+
                 axiosSecure.delete(`/parcels/${id}`)
                     .then(res => {
                         console.log(res.data);
@@ -56,7 +65,7 @@ const MyParcels = () => {
                         refetch();
                     })
 
-                
+
             } catch (err) {
                 Swal.fire("Error", err.message || "Failed to delete parcel", "error");
             }
@@ -64,11 +73,11 @@ const MyParcels = () => {
     };
 
 
- const formatDate = (iso) => {
-        return new Date(iso).toLocaleString(); 
+    const formatDate = (iso) => {
+        return new Date(iso).toLocaleString();
     };
     return (
-         <div className="overflow-x-auto shadow-md rounded-xl">
+        <div className="overflow-x-auto shadow-md rounded-xl">
             <table className="table table-zebra w-full">
                 <thead className="bg-base-200 text-base font-semibold">
                     <tr>

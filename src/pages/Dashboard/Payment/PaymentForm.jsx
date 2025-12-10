@@ -1,18 +1,36 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useAuth from "../../../hooks/useAuth";
 
 const PaymentForm = () => {
-    const {parcelId}=useParams();
+  const axiosSecure = useAxiosSecure();
+  const {user}=useAuth();
+  const navigate=useNavigate();
+  const { parcelId } = useParams();
   const stripe = useStripe();
   const elements = useElements();
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
+  const { isPending, data: parcelInfo = {} } = useQuery({
+    queryKey: ["parcels", parcelId],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/parcels/${parcelId}`);
+      return res.data;
+    },
+  });
+
+  if (isPending) return "...Loading";
+
+  const amount = parcelInfo?.data?.cost || 0;
+  const amountInCents = amount * 100;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // reset previous messages
     setErrorMsg("");
     setSuccessMsg("");
 
@@ -21,6 +39,7 @@ const PaymentForm = () => {
     const card = elements.getElement(CardElement);
     if (!card) return;
 
+    // Create Payment Method
     const { error, paymentMethod } = await stripe.createPaymentMethod({
       type: "card",
       card,
@@ -29,10 +48,63 @@ const PaymentForm = () => {
     if (error) {
       setErrorMsg(error.message || "Payment failed. Try again.");
       setSuccessMsg("");
-    } else {
-      setSuccessMsg("Payment successful!");
-      setErrorMsg("");
-      console.log("[PaymentMethod]", paymentMethod);
+      return;
+    }
+
+    setSuccessMsg("Payment method created!");
+    setErrorMsg("");
+    console.log("[PaymentMethod]", paymentMethod);
+
+    try {
+      // Create payment intent on server
+      const res = await axiosSecure.post("/payment-checkout-session", {
+        amountInCents,
+        parcelId,
+      });
+
+      const clientSecret = res.data.clientSecret;
+
+      // Confirm card payment
+      const result = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card:elements.getElement(CardElement),
+          billing_details: {
+             name: user.displayName ,
+             email:user.email,
+            },
+        },
+      });
+
+      if (result.error) {
+        console.error(result.error.message);
+        setErrorMsg(result.error.message);
+        setSuccessMsg("");
+      } else if (result.paymentIntent?.status === "succeeded") {
+        console.log("Payment succeeded!");
+        setSuccessMsg("Payment succeeded!");
+        setErrorMsg("");
+
+        // Todo create a payment history
+        const transactionId=result.paymentIntent.id
+        const paymentData={
+          amount,
+                    currency,
+                    customerEmail:user.email,
+                    parcelId,
+                    parcelName,
+                    transactionId,
+                    paymentStatus,
+                    paidAt
+        }
+        const paymentRes=await axiosSecure.post('/create-checkout-session',paymentData)
+        if(paymentRes.data.insertedId){
+          console.log('payment successfull')
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMsg(err.message || "Payment failed");
+      setSuccessMsg("");
     }
   };
 
@@ -44,7 +116,6 @@ const PaymentForm = () => {
       >
         <h2 className="text-2xl font-bold mb-4 text-center">Payment</h2>
 
-        {/* Card Input Box */}
         <div className="p-4 rounded-lg border border-gray-300 bg-gray-50 focus-within:border-blue-500 transition">
           <CardElement
             className="p-2"
@@ -61,23 +132,15 @@ const PaymentForm = () => {
           />
         </div>
 
-        {/* Error Message */}
-        {errorMsg && (
-          <p className="text-red-600 text-sm mt-2 font-medium">{errorMsg}</p>
-        )}
+        {errorMsg && <p className="text-red-600 text-sm mt-2 font-medium">{errorMsg}</p>}
+        {successMsg && <p className="text-green-600 text-sm mt-2 font-medium">{successMsg}</p>}
 
-        {/* Success Message */}
-        {successMsg && (
-          <p className="text-green-600 text-sm mt-2 font-medium">{successMsg}</p>
-        )}
-
-        {/* Button */}
         <button
           type="submit"
           disabled={!stripe}
           className="btn w-full bg-[#CAEB66] hover:bg-[#B5D54B] text-black font-bold py-2 rounded-lg shadow-md disabled:bg-gray-400 mt-4"
         >
-          Pay For Parcel
+          Pay For Parcel ${amount}
         </button>
       </form>
     </div>

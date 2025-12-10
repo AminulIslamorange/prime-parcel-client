@@ -1,5 +1,13 @@
 import { Link, Outlet } from "react-router-dom";
 import ProFastLogo from "../pages/shared/ProFastLogo/ProFastLogo";
+import { 
+  FiPackage, 
+  FiClock, 
+  FiMapPin, 
+  FiUser, 
+  FiUsers, 
+  FiSettings 
+} from "react-icons/fi";
 
 const DashBoardLayout = () => {
   return (
@@ -55,15 +63,45 @@ const DashBoardLayout = () => {
 
         <ul className="menu bg-base-200 w-80 min-h-full p-4 text-base-content overflow-y-auto">
           <ProFastLogo></ProFastLogo>
-          <h2 className="text-xl font-bold mb-4 px-2 mt-4">Menu</h2>
+          <h2 className="text-xl font-bold mb-4 px-2 mt-4 flex items-center gap-2">
+            <FiPackage /> Menu
+          </h2>
 
           <li>
-            <Link to="/dashboard/myParcels" className="rounded-lg">My Parcels</Link>
+            <Link to="/dashboard/myParcels" className="rounded-lg flex items-center gap-2">
+              <FiPackage /> My Parcels
+            </Link>
           </li>
 
-          <li><a className="rounded-lg">Orders</a></li>
-          <li><a className="rounded-lg">Users</a></li>
-          <li><a className="rounded-lg">Settings</a></li>
+          <li>
+            <Link to="/dashboard/paymentHistory" className="rounded-lg flex items-center gap-2">
+              <FiClock /> Payment History
+            </Link>
+          </li>
+
+          <li>
+            <Link to="/dashboard/track" className="rounded-lg flex items-center gap-2">
+              <FiMapPin /> Track a Package
+            </Link>
+          </li>
+
+          <li>
+            <Link to="/dashboard/updateProfile" className="rounded-lg flex items-center gap-2">
+              <FiUser /> Update Profile
+            </Link>
+          </li>
+
+          <li>
+            <a className="rounded-lg flex items-center gap-2">
+              <FiUsers /> Users
+            </a>
+          </li>
+
+          <li>
+            <a className="rounded-lg flex items-center gap-2">
+              <FiSettings /> Settings
+            </a>
+          </li>
 
           <div className="divider"></div>
 
