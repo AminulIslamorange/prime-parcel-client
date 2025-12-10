@@ -1,20 +1,20 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
 
 const PaymentForm = () => {
   const axiosSecure = useAxiosSecure();
-  const {user}=useAuth();
-  const navigate=useNavigate();
+  const { user } = useAuth();
   const { parcelId } = useParams();
   const stripe = useStripe();
   const elements = useElements();
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
+  // Fetch parcel info
   const { isPending, data: parcelInfo = {} } = useQuery({
     queryKey: ["parcels", parcelId],
     queryFn: async () => {
@@ -25,8 +25,8 @@ const PaymentForm = () => {
 
   if (isPending) return "...Loading";
 
-  const amount = parcelInfo?.data?.cost || 0;
-  const amountInCents = amount * 100;
+  const parcel = parcelInfo.data;
+  const amount = parcel?.cost || 0;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,66 +39,52 @@ const PaymentForm = () => {
     const card = elements.getElement(CardElement);
     if (!card) return;
 
-    // Create Payment Method
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card,
-    });
-
-    if (error) {
-      setErrorMsg(error.message || "Payment failed. Try again.");
-      setSuccessMsg("");
-      return;
-    }
-
-    setSuccessMsg("Payment method created!");
-    setErrorMsg("");
-    console.log("[PaymentMethod]", paymentMethod);
-
     try {
-      // Create payment intent on server
-      const res = await axiosSecure.post("/payment-checkout-session", {
-        amountInCents,
+      // 1️⃣ Create PaymentIntent on backend
+      const res = await axiosSecure.post("/create-payment-intent", {
+        amount,
         parcelId,
+        parcelName: parcel?.parcelName,
+        senderEmail: user.email,
       });
 
       const clientSecret = res.data.clientSecret;
 
-      // Confirm card payment
+      // 2️⃣ Confirm card payment
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
-          card:elements.getElement(CardElement),
+          card: elements.getElement(CardElement),
           billing_details: {
-             name: user.displayName ,
-             email:user.email,
-            },
+            name: user.displayName,
+            email: user.email,
+          },
         },
       });
 
       if (result.error) {
-        console.error(result.error.message);
-        setErrorMsg(result.error.message);
+        setErrorMsg(result.error.message || "Payment failed");
         setSuccessMsg("");
+        console.error(result.error);
       } else if (result.paymentIntent?.status === "succeeded") {
-        console.log("Payment succeeded!");
         setSuccessMsg("Payment succeeded!");
         setErrorMsg("");
+        console.log("Payment succeeded!", result.paymentIntent);
 
-        // Todo create a payment history
-        const transactionId=result.paymentIntent.id
-        const paymentData={
+        // 3️⃣ Save payment info to DB
+        const paymentData = {
           amount,
-                    currency,
-                    customerEmail:user.email,
-                    parcelId,
-                    parcelName,
-                    transactionId,
-                    paymentStatus,
-                    paidAt
-        }
-        const paymentRes=await axiosSecure.post('/create-checkout-session',paymentData)
-        if(paymentRes.data.insertedId){
-          console.log('payment successfull')
+          currency: "usd",
+          customerEmail: user.email,
+          parcelId,
+          parcelName: parcel?.parcelName,
+          transactionId: result.paymentIntent.id,
+          paymentStatus: result.paymentIntent.status,
+          paidAt: new Date(),
+        };
+
+        const paymentRes = await axiosSecure.post("/payments", paymentData);
+        if (paymentRes.data.insertedId) {
+          console.log("Payment successfully saved in DB");
         }
       }
     } catch (err) {
@@ -114,7 +100,9 @@ const PaymentForm = () => {
         onSubmit={handleSubmit}
         className="max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg border"
       >
-        <h2 className="text-2xl font-bold mb-4 text-center">Payment</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">
+          Pay for Parcel: ${amount}
+        </h2>
 
         <div className="p-4 rounded-lg border border-gray-300 bg-gray-50 focus-within:border-blue-500 transition">
           <CardElement
@@ -132,15 +120,19 @@ const PaymentForm = () => {
           />
         </div>
 
-        {errorMsg && <p className="text-red-600 text-sm mt-2 font-medium">{errorMsg}</p>}
-        {successMsg && <p className="text-green-600 text-sm mt-2 font-medium">{successMsg}</p>}
+        {errorMsg && (
+          <p className="text-red-600 text-sm mt-2 font-medium">{errorMsg}</p>
+        )}
+        {successMsg && (
+          <p className="text-green-600 text-sm mt-2 font-medium">{successMsg}</p>
+        )}
 
         <button
           type="submit"
           disabled={!stripe}
           className="btn w-full bg-[#CAEB66] hover:bg-[#B5D54B] text-black font-bold py-2 rounded-lg shadow-md disabled:bg-gray-400 mt-4"
         >
-          Pay For Parcel ${amount}
+          Pay ${amount}
         </button>
       </form>
     </div>

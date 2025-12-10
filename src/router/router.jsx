@@ -13,6 +13,7 @@ import Payment from "../pages/Dashboard/Payment/Payment";
 import PaymentHistory from "../pages/Dashboard/PaymentHistory/PaymentHistory";
 import TrackParcel from "../pages/Dashboard/TrackParcel/TrackParcel";
 
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -72,7 +73,8 @@ export const router = createBrowserRouter([
         {
           path:'track',
           element:<TrackParcel></TrackParcel>
-        }
+        },
+       
       ]
   }
 ]);
