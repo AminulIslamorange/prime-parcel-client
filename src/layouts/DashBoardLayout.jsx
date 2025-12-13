@@ -1,13 +1,15 @@
 import { Link, Outlet } from "react-router-dom";
 import ProFastLogo from "../pages/shared/ProFastLogo/ProFastLogo";
-import { 
-  FiPackage, 
-  FiClock, 
-  FiMapPin, 
-  FiUser, 
-  FiUsers, 
-  FiSettings 
+import {
+  FiPackage,
+  FiClock,
+  FiMapPin,
+  FiUser,
+  FiUsers,
+  FiSettings
 } from "react-icons/fi";
+import { MdOutlineRoute } from "react-icons/md";
+import { TbRouteOff } from "react-icons/tb";
 
 const DashBoardLayout = () => {
   return (
@@ -85,6 +87,26 @@ const DashBoardLayout = () => {
             </Link>
           </li>
 
+
+          <li>
+            <Link
+              to="/dashboard/activeRider"
+              className="rounded-lg flex items-center gap-2"
+            >
+              <MdOutlineRoute className="text-green-500 text-lg" />
+              Active Rider
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              to="/dashboard/pendingRider"
+              className="rounded-lg flex items-center gap-2"
+            >
+              <TbRouteOff className="text-yellow-500 text-lg" />
+              Pending Rider
+            </Link>
+          </li>
           <li>
             <Link to="/dashboard/updateProfile" className="rounded-lg flex items-center gap-2">
               <FiUser /> Update Profile
