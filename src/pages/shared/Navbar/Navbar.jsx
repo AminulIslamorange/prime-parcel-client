@@ -14,7 +14,7 @@ const Navbar = () => {
       {user && <li><NavLink to="/dashboard">Dashboard</NavLink></li>}
       <li><NavLink to="/">About Us</NavLink></li>
       <li><NavLink to="/">Pricing</NavLink></li>
-      <li><NavLink to="/">Be a Rider</NavLink></li>
+      <li><NavLink to="/beARider">Be a Rider</NavLink></li>
     </>
   );
 
@@ -54,9 +54,9 @@ const Navbar = () => {
         </div>
 
         {/* Logo */}
-        <Link to="/" className="btn btn-ghost text-xl">
+        <span className="btn btn-ghost text-xl">
           <ProFastLogo />
-        </Link>
+        </span>
       </div>
 
       {/* Navbar Center */}
@@ -75,7 +75,7 @@ const Navbar = () => {
             Sign In
           </Link>
         )}
-        <Link to="" className="btn bg-[#CAEB66]">
+        <Link to="/beARider" className="btn bg-[#CAEB66]">
           Be a rider
         </Link>
       </div>
