@@ -15,44 +15,52 @@ import TrackParcel from "../pages/Dashboard/TrackParcel/TrackParcel";
 import BeARider from "../pages/Dashboard/BeARider/BeARider";
 import PendingRiders from "../pages/Dashboard/PendignRiders/PendingRiders";
 import ActiveRiders from "../pages/Dashboard/PendignRiders/ActiveRiders/ActiveRiders";
+import MakeAdmin from "../pages/Dashboard/MakeAdmin/MakeAdmin";
+import Forbidden from "../pages/Forbidden/Forbidden";
+import AdminRoutes from "./AdminRoutes";
 
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element:<RootLayout></RootLayout>,
-    children:[
-        {path:'/',
-            element:<Home></Home>
-        },
-        {
-          path:'/coverage',
-          element:<Coverage></Coverage>,
-          loader:()=>fetch('serviceCenter.json')
-        },
-        {
-          path:'/sendParcel',
-          element:<PrivetRoutes><SendParcel></SendParcel></PrivetRoutes>,
-          loader:()=>fetch('serviceCenter.json')
-        },
-        {
-          path:'/beARider',
-          element:<PrivetRoutes><BeARider></BeARider></PrivetRoutes>,loader:()=>fetch('serviceCenter.json')
-        }
+    element: <RootLayout></RootLayout>,
+    children: [
+      {
+        path: '/',
+        element: <Home></Home>
+      },
+      {
+        path: '/coverage',
+        element: <Coverage></Coverage>,
+        loader: () => fetch('serviceCenter.json')
+      },
+      {
+        path: '/sendParcel',
+        element: <PrivetRoutes><SendParcel></SendParcel></PrivetRoutes>,
+        loader: () => fetch('serviceCenter.json')
+      },
+      {
+        path: '/forbidden',
+        element: <Forbidden></Forbidden>
+      },
+      {
+        path: '/beARider',
+        element: <PrivetRoutes><BeARider></BeARider></PrivetRoutes>, loader: () => fetch('serviceCenter.json')
+      }
     ]
   },
   // authentication layout
   {
-    path:'/',
-    element:<AuthLayout></AuthLayout>,
-    children:[
+    path: '/',
+    element: <AuthLayout></AuthLayout>,
+    children: [
       {
-        path:'login',
-        element:<Login></Login>
+        path: 'login',
+        element: <Login></Login>
       },
       {
-        path:'signUp',
-        element:<SignUp></SignUp>
+        path: 'signUp',
+        element: <SignUp></SignUp>
       }
     ]
 
@@ -60,36 +68,43 @@ export const router = createBrowserRouter([
 
   // dashboard layout 
   {
-    path:'dashboard',
-    element:<PrivetRoutes>
+    path: 'dashboard',
+    element: <PrivetRoutes>
       <DashBoardLayout></DashBoardLayout>
-      </PrivetRoutes>,
-      children:[
-        {
-          path:'myParcels',
-          element:<MyParcels></MyParcels>
-        },
-        {
-          path:'payment/:parcelId',
-          element:<Payment></Payment>
-        },
-        {
-          path:'paymentHistory',
-          element:<PaymentHistory></PaymentHistory>
-        },
-        {
-          path:'track',
-          element:<TrackParcel></TrackParcel>
-        },
-        {
-          path:'pendingRider',
-          element:<PendingRiders></PendingRiders>
-        },
-        {
-          path:'activeRider',
-          element:<ActiveRiders></ActiveRiders>
-        }
-       
-      ]
+    </PrivetRoutes>,
+    children: [
+      {
+        path: 'myParcels',
+        element: <MyParcels></MyParcels>
+      },
+      {
+        path: 'payment/:parcelId',
+        element: <Payment></Payment>
+      },
+      {
+        path: 'paymentHistory',
+        element: <PaymentHistory></PaymentHistory>
+      },
+      {
+        path: 'track',
+        element: <TrackParcel></TrackParcel>
+      },
+      {
+        path: 'pendingRider',
+
+        element: <AdminRoutes><PendingRiders></PendingRiders></AdminRoutes>
+      },
+      {
+        path: 'activeRider',
+
+        element: <AdminRoutes><ActiveRiders></ActiveRiders></AdminRoutes>
+      },
+      {
+        path: 'makeAdmin',
+
+        element: <AdminRoutes><MakeAdmin></MakeAdmin></AdminRoutes>
+      }
+
+    ]
   }
 ]);

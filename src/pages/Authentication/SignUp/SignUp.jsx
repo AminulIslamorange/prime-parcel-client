@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import useAuth from "../../../hooks/useAuth";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import SocialLogin from "../SocialLogin/SocialLogin";
 import axios from "axios";
 import { useState } from "react";
@@ -13,6 +13,9 @@ import useAxios from "../../../hooks/useAxios";
 const SignUp = () => {
   const { createUser, updateUserProfile } = useAuth();
   const {axiosPublic}=useAxios();
+  const location=useLocation();
+  const navigate=useNavigate();
+  const from = location.state?.from?.pathname || "/";
   const [profilePic, setProfilePic] = useState('')
 
   const {
@@ -48,6 +51,7 @@ const SignUp = () => {
           .then(() => {
             // Profile updated!
             // ...
+            navigate(from);
           }).catch((error) => {
             // An error occurred
             // ...

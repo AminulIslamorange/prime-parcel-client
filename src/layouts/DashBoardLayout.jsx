@@ -10,8 +10,10 @@ import {
 } from "react-icons/fi";
 import { MdOutlineRoute } from "react-icons/md";
 import { TbRouteOff } from "react-icons/tb";
+import useUserRole from "../hooks/useUserRole";
 
 const DashBoardLayout = () => {
+  const { role, roleLoading } = useUserRole();
   return (
     <div className="drawer lg:drawer-open min-h-screen">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
@@ -87,8 +89,7 @@ const DashBoardLayout = () => {
             </Link>
           </li>
 
-
-          <li>
+          { !roleLoading && role==='admin' && <>  <li>
             <Link
               to="/dashboard/activeRider"
               className="rounded-lg flex items-center gap-2"
@@ -98,26 +99,21 @@ const DashBoardLayout = () => {
             </Link>
           </li>
 
-          <li>
-            <Link
-              to="/dashboard/pendingRider"
-              className="rounded-lg flex items-center gap-2"
-            >
-              <TbRouteOff className="text-yellow-500 text-lg" />
-              Pending Rider
-            </Link>
-          </li>
-          <li>
-            <Link to="/dashboard/updateProfile" className="rounded-lg flex items-center gap-2">
-              <FiUser /> Update Profile
-            </Link>
-          </li>
-
-          <li>
-            <a className="rounded-lg flex items-center gap-2">
-              <FiUsers /> Users
-            </a>
-          </li>
+            <li>
+              <Link
+                to="/dashboard/pendingRider"
+                className="rounded-lg flex items-center gap-2"
+              >
+                <TbRouteOff className="text-yellow-500 text-lg" />
+                Pending Rider
+              </Link>
+            </li>
+            <li>
+              <Link to="/dashboard/makeAdmin" className="rounded-lg flex items-center gap-2">
+                <FiUser /> Make Admin
+              </Link>
+            </li>
+          </>}
 
           <li>
             <a className="rounded-lg flex items-center gap-2">
